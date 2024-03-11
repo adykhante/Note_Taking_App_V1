@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ session['username'] }}</h1>
+        <form action="/" method="post">
+            <input type="hidden" name="action" value="Add">
+            <input type="text" name="note_name" placeholder="Enter note name" required><br><br>
+            <input type="text" name="note_description" placeholder="Enter note description"><br><br>
+            <button type="submit">Add Note</button>
+        </form>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <h2>Your Notes:</h2>
+        <ul>
+            {% for note_name, note_data in notes.items() %}
+                <li>
+                    <strong>{{ note_name }}</strong><br>
+                    {% if note_data.description %}{{ note_data.description }}<br>{% endif %}
+                    <small>Created at: {{ note_data.datetime }}</small><br>
+                    <input id="edit{{ loop.index }}" type="checkbox" class="edit-checkbox">
+                    <label for="edit{{ loop.index }}" class="edit-btn">Edit</label>
+                    <form action="/" method="post" class="edit-form">
+                        <input type="hidden" name="action" value="Edit">
+                        <input type="hidden" name="note_name" value="{{ note_name }}">
+                        <input type="text" name="new_note_name" placeholder="Enter new note name" required><br><br>
+                        <input type="text" name="new_note_description" placeholder="Enter new note description" value="{{ note_data.description }}"><br><br>
+                        <button type="submit">Save</button>
+                    </form>
+                    <form action="/" method="post">
+                        <input type="hidden" name="action" value="Delete">
+                        <input type="hidden" name="delete_note_name" value="{{ note_name }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <br>
+        <a href="/logout" class="logout-link">Logout</a>
+    </div>
+</body>
+</html>
